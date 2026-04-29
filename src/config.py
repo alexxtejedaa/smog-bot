@@ -17,11 +17,6 @@ class Settings(BaseSettings):
     MEXC_API_KEY: str = ""
     MEXC_API_SECRET: str = ""
     
-    # Trading configuration
-    ACCOUNT_RISK: float = 15.0
-    MAX_ACTIVE_POSITIONS: int = 1
-    DEFAULT_LEVERAGE: int = 10
-    
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FILE: Optional[str] = None

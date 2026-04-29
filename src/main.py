@@ -16,7 +16,7 @@ app = FastAPI(
 )
 
 # Include routers
-app.include_router(webhook_router, prefix="/api", tags=["webhooks"])
+app.include_router(webhook_router, tags=["webhooks"])
 
 @app.get("/")
 async def root():

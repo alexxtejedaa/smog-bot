@@ -5,27 +5,37 @@ Skeleton only. Models will be expanded as webhook format is defined.
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
 from datetime import datetime
 
 class TradingViewAlert(BaseModel):
-    """TradingView webhook payload model"""
+    """TradingView webhook payload model — matches actual alert schema"""
     
-    token: str = Field(..., description="Token symbol (e.g., ETH, SOL)")
-    signal_type: str = Field(..., description="Signal type (OG, FVG, ChoCh, ADX)")
-    direction: str = Field(..., description="LONG or SHORT")
-    timestamp: Optional[datetime] = Field(default=None, description="Alert timestamp")
-    price: Optional[float] = Field(default=None, description="Entry price suggestion")
+    auth_token: str = Field(..., description="Authentication token from payload")
+    mode: Literal["trade", "context"] = Field(..., description="'trade' for execution, 'context' for logging only")
+    signal_type: Literal["OG", "FVG", "ChoCh", "ADX"] = Field(..., description="Signal type")
+    direction: Literal["long", "short"] = Field(..., description="'long' or 'short' (lowercase)")
+    symbol: str = Field(..., description="Trading symbol (e.g., 'ETHUSDT.P')")
+    timeframe: str = Field(..., description="Timeframe (e.g., '1', '5', '15')")
+    price: float = Field(..., description="Entry price")
+    timestamp: datetime = Field(..., description="ISO format timestamp (auto-parsed by Pydantic)")
+    alert_id: str = Field(..., description="Alert identifier (e.g., 'eth_og_short')")
     
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
-                "token": "ETH",
+                "auth_token": "secret_token_here",
+                "mode": "trade",
                 "signal_type": "OG",
-                "direction": "LONG",
+                "direction": "long",
+                "symbol": "ETHUSDT.P",
+                "timeframe": "1",
                 "price": 2500.0,
+                "timestamp": "2026-04-29T13:00:00Z",
+                "alert_id": "eth_og_long",
             }
         }
+    }
 
 class WebhookResponse(BaseModel):
     """Response model for webhook endpoint"""
@@ -34,14 +44,15 @@ class WebhookResponse(BaseModel):
     message: str = Field(..., description="Status message")
     order_id: Optional[str] = Field(default=None, description="MEXC order ID if processed")
     
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "status": "received",
                 "message": "Alert queued for processing",
                 "order_id": None,
             }
         }
+    }
 
 class FilterResult(BaseModel):
     """Filter evaluation result"""
