@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FILE: Optional[str] = None
+    LOG_DIR: str = "logs"
     
     # Server
     HOST: str = "0.0.0.0"
