@@ -24,6 +24,21 @@ TIMEOUT = (5, 10)
 
 
 class MexcClient:
+    # Mappning av interval till sekunder per candle
+    INTERVAL_SECONDS = {
+        "Min1": 60,
+        "Min5": 300,
+        "Min15": 900,
+        "Min30": 1800,
+        "Min60": 3600,
+        "Hour1": 3600,
+        "Hour4": 14400,
+        "Hour8": 28800,
+        "Day1": 86400,
+        "Week1": 604800,
+        "Month1": 2592000,
+    }
+    
     def __init__(self, api_key: str, api_secret: str):
         self.api_key    = api_key
         self.api_secret = api_secret
@@ -117,7 +132,8 @@ class MexcClient:
     # ── Public endpoints ──────────────────────────────────────────────────────
     def get_klines(self, symbol: str, interval: str = "Min1", limit: int = 200) -> list:
         now   = int(time.time())
-        start = now - limit * 60
+        seconds_per_candle = self.INTERVAL_SECONDS.get(interval, 60)
+        start = now - limit * seconds_per_candle
         res   = self._get(f"/api/v1/contract/kline/{symbol}", {
             "interval": interval, "start": start, "end": now,
         })
